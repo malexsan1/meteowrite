@@ -1,28 +1,16 @@
-import * as yup from 'yup';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useHistory } from 'react-router-dom';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 import { authService } from '../AuthAPIService';
-
-const requiredMessage = 'This field is required';
-const emailRegexp =
-  /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+import { loginSchema } from './validationSchemas';
 
 export interface LoginFormValues {
   email: string;
   password: string;
   rememberMe: boolean;
 }
-
-const loginSchema = yup.object().shape({
-  password: yup.string().trim().required(requiredMessage),
-  email: yup
-    .string()
-    .trim()
-    .required(requiredMessage)
-    .matches(emailRegexp, 'Invalid email.'),
-});
 
 const defaultValues: LoginFormValues = {
   email: '',
@@ -31,6 +19,7 @@ const defaultValues: LoginFormValues = {
 };
 
 export const useLogin = () => {
+  const { push } = useHistory();
   const [error, setError] = useState('');
 
   const { control, handleSubmit, formState, register } =
@@ -41,9 +30,14 @@ export const useLogin = () => {
 
   const onSubmit = handleSubmit((values) => {
     setError('');
-    return authService.login(values).catch((err: Error) => {
-      setError(err.message);
-    });
+    return authService
+      .login(values)
+      .then(() => {
+        push('/dashboard');
+      })
+      .catch((err: Error) => {
+        setError(err.message);
+      });
   });
 
   return {

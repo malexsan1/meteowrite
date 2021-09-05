@@ -20,7 +20,7 @@ export const FormCheckbox: React.FC<FormCheckboxProps> = ({
   return (
     <div
       tabIndex={0}
-      className={tw`flex cursor-pointer ${className}`}
+      className={tw`flex cursor-pointer items-baseline ${className}`}
       onClick={() => {
         onChange(!value);
       }}

@@ -1,21 +1,28 @@
 import { tw } from 'twind';
 import { Link } from 'react-router-dom';
+import { Control } from 'react-hook-form';
 
 import { Input, FormElement, FormCheckbox, PasswordInput } from 'UIKit';
 
-import { AuthForm } from '../components';
-import { useLogin } from '../hooks/useLogin';
+interface RegisterStepProps {
+  error: string;
+  isLoading: boolean;
+  control: Control<any>;
+}
 
-export const Login = () => {
-  const { onSubmit, control, isLoading, error } = useLogin();
-
+export const RegisterStep: React.FC<RegisterStepProps> = ({
+  error,
+  control,
+  isLoading,
+}) => {
   return (
-    <AuthForm title="Login" onSubmit={onSubmit}>
-      <FormElement id="email" label="Email" control={control}>
+    <>
+      <FormElement required id="email" label="Email" control={control}>
         {(field) => <Input {...field} placeholder="Email..." />}
       </FormElement>
 
       <FormElement
+        required
         id="password"
         label="Password"
         className="mt-8"
@@ -24,39 +31,48 @@ export const Login = () => {
         {(field) => <PasswordInput {...field} placeholder="Password..." />}
       </FormElement>
 
-      <div
-        className={tw`mt-8 flex flex-col items-start md:flex-row justify-between`}
+      <FormElement
+        required
+        label="Password"
+        className="mt-8"
+        control={control}
+        id="confirmPassword"
       >
-        <FormCheckbox id="rememberMe" control={control}>
-          Remember me
-        </FormCheckbox>
+        {(field) => (
+          <PasswordInput {...field} placeholder="Confirm Password..." />
+        )}
+      </FormElement>
 
+      <div className={tw`flex justify-start items-baseline mt-8`}>
+        <FormCheckbox id="agreeTOC" control={control}>
+          I agree to the Meteowrite
+        </FormCheckbox>
         <Link
-          to="/reset-password"
+          to="#"
           className={tw`border(b-2 purple-100) text-purple-500 ml-2 pb-1 mt-4 md:mt-0 self-end md:self-auto`}
         >
-          Forgot password?
+          Terms and Conditions
         </Link>
       </div>
 
       <button
         className={tw`bg-yellow-400 h-12 text-white text-uppercase font-semibold cursor-pointer mt-8`}
       >
-        {isLoading ? 'Loading...' : 'login'}
+        {isLoading ? 'Loading...' : 'create account'}
       </button>
 
       {error && <span className={tw`text(center red-500) mt-4`}>{error}</span>}
 
       <div className={tw`text-center mt-8`}>
-        <span>New to meteorwrite?</span>
+        <span>Already have an account?</span>
 
         <Link
-          to="/register"
+          to="/"
           className={tw`border(b-2 purple-100) text-purple-500 ml-2 pb-1`}
         >
-          Register
+          Login
         </Link>
       </div>
-    </AuthForm>
+    </>
   );
 };
